@@ -193,9 +193,9 @@ func getIp2Location(ip string) (*ip2location.IP2Locationrecord, error) {
 	//厳密ではないが、IPv4かIPv6のどちらか判別できれば良いので許容
 	ipV4Regex := regexp.MustCompile(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}`)
 	if ipV4Regex.MatchString(ip) {
-		db, err = ip2location.OpenDB("/IP2LOCATION-LITE-DB11.BIN")
+		db, err = ip2location.OpenDB("./IP2LOCATION-LITE-DB11.BIN")
 	} else {
-		db, err = ip2location.OpenDB("/IP2LOCATION-LITE-DB11.IPV6.BIN")
+		db, err = ip2location.OpenDB("./IP2LOCATION-LITE-DB11.IPV6.BIN")
 	}
 
 	if err != nil {
