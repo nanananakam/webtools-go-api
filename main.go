@@ -276,6 +276,6 @@ func main() {
 		AllowMethods: []string{http.MethodPost},
 	}))
 
-	e.GET("/whois", whoisHandler)
+	e.POST("/whois", whoisHandler)
 	e.Logger.Fatal(e.Start("0.0.0.0:80"))
 }
