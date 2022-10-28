@@ -1,0 +1,144 @@
+{
+  "lang" : "en",
+  "notices" : [ {
+    "title" : "ABOUT",
+    "description" : [ "This is the AfriNIC RDAP server." ],
+    "links" : [ {
+      "value" : "https://rdap.afrinic.net/rdap/ip/196.46.23.70",
+      "rel" : "describedby",
+      "href" : "https://www.afrinic.net/support/whois-db/reference-manual",
+      "hreflang" : [ "en" ],
+      "type" : "text/html",
+      "title" : "AFRINIC Database Reference Manual",
+      "media" : "screen"
+    } ]
+  }, {
+    "title" : "Terms and Conditions",
+    "description" : [ "This is the AFRINIC Database query service. The objects are in RDAP format." ],
+    "links" : [ {
+      "value" : "https://rdap.afrinic.net/rdap/ip/196.46.23.70",
+      "rel" : "terms-of-service",
+      "href" : "https://afrinic.net/whois/terms",
+      "type" : "text/html"
+    } ]
+  }, {
+    "title" : "Whois Inaccuracy Reporting",
+    "links" : [ {
+      "href" : "https://www.afrinic.net/support/whois-db/reference-manual",
+      "title" : "AFRINIC WHOIS Inaccuracy Report"
+    } ]
+  } ],
+  "links" : [ {
+    "value" : "https://rdap.afrinic.net/rdap/ip/196.46.23.0 - 196.46.23.255",
+    "rel" : "self",
+    "href" : "https://rdap.afrinic.net/rdap/ip/196.46.23.0 - 196.46.23.255"
+  } ],
+  "handle" : "196.46.23.0 - 196.46.23.255",
+  "events" : [ {
+    "eventAction" : "registration",
+    "eventDate" : "2010-02-22T10:24:00Z"
+  }, {
+    "eventAction" : "last changed",
+    "eventDate" : "2019-11-11T12:06:00Z"
+  } ],
+  "status" : [ "active" ],
+  "port43" : "whois.afrinic.net",
+  "name" : "ORG-SAA1-AFRINIC",
+  "type" : "ASSIGNED PI",
+  "country" : "ZA",
+  "entities" : [ {
+    "lang" : "en",
+    "links" : [ {
+      "value" : "https://rdap.afrinic.net/rdap/entity/MB50-AFRINIC",
+      "rel" : "self",
+      "href" : "https://rdap.afrinic.net/rdap/entity/MB50-AFRINIC"
+    } ],
+    "handle" : "MB50-AFRINIC",
+    "status" : [ "active" ],
+    "port43" : "whois.afrinic.net",
+    "vcardArray" : [ "vcard", [ [ "version", { }, "text", "4.0" ], [ "kind", { }, "text", "individual" ], [ "fn", { }, "text", "Martin Bosch" ], [ "tel", {
+      "label" : "SAA Technical | 8 Jones Road | Kempton Park | Johannesburg |South Africa\nJohannesburg 1627\nSouth Africa",
+      "type" : "work"
+    }, "text", "tel:+27-11-978-2432" ], [ "email", {
+      "label" : "SAA Technical | 8 Jones Road | Kempton Park | Johannesburg |South Africa\nJohannesburg 1627\nSouth Africa",
+      "type" : "work"
+    }, "text", "martin.bosch@sita.aero" ], [ "adr", {
+      "label" : "SAA Technical | 8 Jones Road | Kempton Park | Johannesburg |South Africa\nJohannesburg 1627\nSouth Africa",
+      "type" : "work"
+    }, "text", [ "SAA Technical | 8 Jones Road | Kempton Park | Johannesburg |South Africa", "Johannesburg 1627", "South Africa", "", "", "", "" ] ] ] ],
+    "roles" : [ "technical" ],
+    "objectClassName" : "entity"
+  }, {
+    "lang" : "en",
+    "links" : [ {
+      "value" : "https://rdap.afrinic.net/rdap/entity/ORG-SAA1-AFRINIC",
+      "rel" : "self",
+      "href" : "https://rdap.afrinic.net/rdap/entity/ORG-SAA1-AFRINIC"
+    } ],
+    "handle" : "ORG-SAA1-AFRINIC",
+    "status" : [ "active" ],
+    "port43" : "whois.afrinic.net",
+    "vcardArray" : [ "vcard", [ [ "version", { }, "text", "4.0" ], [ "kind", { }, "text", "org" ], [ "fn", { }, "text", "South African Airways" ], [ "tel", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "tel:+27-11-978-9085" ], [ "tel", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "tel:+27-71-316-2750" ], [ "tel", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "tel:+27-83-399-0195" ], [ "tel", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "tel:+27-11-978-5521" ], [ "email", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "martin.bosch@sita.aero" ], [ "email", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "dnsadmin@ipnoc.co.za" ], [ "email", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "robin.barrett@sita.aero" ], [ "email", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", "DeniseVanDeventer@flysaa.com" ], [ "adr", {
+      "label" : "Airways Park\nJones Road\nO.R Tambo International Airport\nJohannesburg",
+      "type" : "work"
+    }, "text", [ "Airways Park", "Jones Road", "O.R Tambo International Airport", "Johannesburg", "", "", "" ] ] ] ],
+    "roles" : [ "registrant" ],
+    "objectClassName" : "entity"
+  }, {
+    "lang" : "en",
+    "links" : [ {
+      "value" : "https://rdap.afrinic.net/rdap/entity/DVD1-AFRINIC",
+      "rel" : "self",
+      "href" : "https://rdap.afrinic.net/rdap/entity/DVD1-AFRINIC"
+    } ],
+    "handle" : "DVD1-AFRINIC",
+    "status" : [ "active" ],
+    "port43" : "whois.afrinic.net",
+    "vcardArray" : [ "vcard", [ [ "version", { }, "text", "4.0" ], [ "kind", { }, "text", "individual" ], [ "fn", { }, "text", "Denise Van Deventer" ], [ "tel", {
+      "label" : "Airways Park\nJones Road, O.R Tambo International Airport\nJohannesburg\nSouth Africa",
+      "type" : "work"
+    }, "text", "tel:+27-11-978-5521" ], [ "email", {
+      "label" : "Airways Park\nJones Road, O.R Tambo International Airport\nJohannesburg\nSouth Africa",
+      "type" : "work"
+    }, "text", "DeniseVanDeventer@flysaa.com" ], [ "adr", {
+      "label" : "Airways Park\nJones Road, O.R Tambo International Airport\nJohannesburg\nSouth Africa",
+      "type" : "work"
+    }, "text", [ "Airways Park", "Jones Road, O.R Tambo International Airport", "Johannesburg", "South Africa", "", "", "" ] ] ] ],
+    "roles" : [ "administrative", "technical" ],
+    "objectClassName" : "entity"
+  } ],
+  "startAddress" : "196.46.23.0",
+  "endAddress" : "196.46.23.255",
+  "ipVersion" : "v4",
+  "parentHandle" : "196.0.0.0 - 196.255.255.255",
+  "cidr0_cidrs" : [ {
+    "v4prefix" : "196.46.23.0",
+    "length" : 24
+  } ],
+  "objectClassName" : "ip network",
+  "rdapConformance" : [ "rdap_level_0, nro_rdap_profile_0, cidr0" ]
+}

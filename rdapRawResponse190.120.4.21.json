@@ -1,0 +1,237 @@
+{
+  "objectClassName":"ip network",
+  "handle":"190.120.4.0/26",
+  "parentHandle":"190.120.0.0/20",
+  "startAddress":"190.120.4.0",
+  "endAddress":"190.120.4.63",
+  "ipVersion":"v4",
+  "type":"reallocated",
+  "entities":[
+    {
+      "objectClassName":"entity",
+      "handle":"SV-PLRE1-LACNIC",
+      "roles":[
+        "registrant"
+      ],
+      "vcardArray":[
+        "vcard",
+        [
+          [
+            "version",
+            {
+
+            },
+            "text",
+            "4.0"
+          ],
+          [
+            "fn",
+            {
+
+            },
+            "text",
+            "Presidencia de la Rep\u00FAblica"
+          ],
+          [
+            "kind",
+            {
+
+            },
+            "text",
+            "org"
+          ],
+          [
+            "adr",
+            {
+
+            },
+            "text",
+            [
+              "",
+              "--",
+              "Alameda Dr. Manuel Enrique Araujo, San Salvador",
+              "San Salvador",
+              "",
+              "--",
+              "SV"
+            ]
+          ],
+          [
+            "tel",
+            {
+              "type":"voice"
+            },
+            "text",
+            "503 2 2489508#0"
+          ]
+        ]
+      ],
+      "events":[
+        {
+          "eventAction":"registration",
+          "eventDate":"2014-06-04T17:26:18Z"
+        },
+        {
+          "eventAction":"last changed",
+          "eventDate":"2014-06-04T17:26:18Z"
+        }
+      ],
+      "links":[
+        {
+          "value":"https://rdap.lacnic.net/rdap/entity/SV-PLRE1-LACNIC",
+          "rel":"self",
+          "type":"application/rdap+json",
+          "href":"https://rdap.lacnic.net/rdap/entity/SV-PLRE1-LACNIC"
+        }
+      ]
+    },      {
+      "objectClassName":"entity",
+      "handle":"VIP18",
+      "roles":[
+        "administrative", "technical", "abuse"
+      ],
+      "vcardArray":[
+        "vcard",
+        [
+          [
+            "version",
+            {
+
+            },
+            "text",
+            "4.0"
+          ],
+          [
+            "fn",
+            {
+
+            },
+            "text",
+            "Victor Perez"
+          ],
+          [
+            "kind",
+            {
+
+            },
+            "text",
+            "individual"
+          ],
+          [
+            "adr",
+            {
+
+            },
+            "text",
+            [
+              "",
+              "",
+              "Altos de la Cima 2, Calle San Nicolas, Edificio TIGO",
+              "San Salvador",
+              "",
+              "",
+              "SV"
+            ]
+          ],
+          [
+            "tel",
+            {
+              "type":"voice"
+            },
+            "text",
+            "503 2 5070753"
+          ],
+          [
+            "email",
+            {
+
+            },
+            "text",
+            "corporatehd@sv.tigo.com"
+          ]
+        ]
+      ],
+      "events":[
+        {
+          "eventAction":"registration",
+          "eventDate":"2014-06-02T19:26:51Z"
+        },
+        {
+          "eventAction":"last changed",
+          "eventDate":"2022-05-04T20:09:48Z"
+        }
+      ],
+      "links":[
+        {
+          "value":"https://rdap.lacnic.net/rdap/entity/VIP18",
+          "rel":"self",
+          "type":"application/rdap+json",
+          "href":"https://rdap.lacnic.net/rdap/entity/VIP18"
+        }
+      ]
+    }
+  ],
+  "events":[
+    {
+      "eventAction":"registration",
+      "eventDate":"2014-06-04T17:28:06Z"
+    },
+    {
+      "eventAction":"last changed",
+      "eventDate":"2014-06-04T17:28:06Z"
+    }
+  ],
+  "links":[
+    {
+      "value":"https://rdap.lacnic.net/rdap/ip/190.120.4.0/26",
+      "rel":"self",
+      "type":"application/rdap+json",
+      "href":"https://rdap.lacnic.net/rdap/ip/190.120.4.0/26"
+    },
+    {
+      "value":"https://rdap.lacnic.net/rdap/ip/190.120.0.0/20",
+      "rel":"up",
+      "type":"application/rdap+json",
+      "href":"https://rdap.lacnic.net/rdap/ip/190.120.0.0/20"
+    }
+  ],
+  "remarks":[
+    {
+      "description":[
+      ],
+      "title":"remarks"
+    }
+  ],
+  "lacnic_originAutnum":[],
+  "lacnic_legalRepresentative":"William Coreas",
+  "lacnic_reverseDelegations":[
+  ],
+  "cidr0_cidrs":[
+    {
+      "v4prefix":"190.120.4.0",
+      "length":26
+    }
+  ],
+  "rdapConformance":[
+    "rdap_level_0",
+    "lacnic_level_0",
+    "cidr0"
+  ],
+  "notices":[
+    {
+      "title":"Terms and Conditions",
+      "description":[
+        "This is the LACNIC RDAP service. Objects are in RDAP format."
+      ],
+      "links":[
+        {
+          "value":"http://www.lacnic.net/web/lacnic/registration-data-access-protocol",
+          "rel":"terms-of-service",
+          "type":"text/html",
+          "href":"http://www.lacnic.net/web/lacnic/registration-data-access-protocol"
+        }
+      ]
+    }
+  ],
+  "port43":"whois.lacnic.net"
+}
