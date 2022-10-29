@@ -3,6 +3,11 @@ package whois
 import (
 	"encoding/json"
 	"errors"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/ip2location/ip2location-go/v9"
 	"github.com/labstack/echo/v4"
 	"io"
@@ -10,7 +15,6 @@ import (
 	"nanananakam-api-go/constants"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -70,16 +74,52 @@ var ip2locationDbV4 *ip2location.DB
 var ip2locationDbV6 *ip2location.DB
 
 func init() {
-	dbv4, err := ip2location.OpenDB("./whois/IP2LOCATION-LITE-DB11.BIN")
+	if err := downloadFromObjectStorage("IP2LOCATION-LITE-DB11.BIN"); err != nil {
+		panic("download failed. " + err.Error())
+	}
+	if err := downloadFromObjectStorage("IP2LOCATION-LITE-DB11.IPV6.BIN"); err != nil {
+		panic("download failed. " + err.Error())
+	}
+	dbv4, err := ip2location.OpenDB("IP2LOCATION-LITE-DB11.BIN")
 	if err != nil {
 		panic("ip2location DB IPv4 Open failed. " + err.Error())
 	}
-	dbv6, err := ip2location.OpenDB("./whois/IP2LOCATION-LITE-DB11.IPV6.BIN")
+	dbv6, err := ip2location.OpenDB("IP2LOCATION-LITE-DB11.IPV6.BIN")
 	if err != nil {
 		panic("ip2location DB IPv6 Open failed. " + err.Error())
 	}
 	ip2locationDbV4 = dbv4
 	ip2locationDbV6 = dbv6
+}
+
+func downloadFromObjectStorage(filename string) error {
+	s3Config := aws.Config{
+		Credentials:      credentials.NewStaticCredentials(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), ""),
+		Endpoint:         aws.String("https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com"),
+		Region:           aws.String("ap-osaka-1"),
+		S3ForcePathStyle: aws.Bool(true),
+	}
+	sess, err := session.NewSessionWithOptions(session.Options{
+		Config: s3Config,
+	})
+	if err != nil {
+		return err
+	}
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+
+	// Downloaderを作成し、S3オブジェクトをダウンロード
+	downloader := s3manager.NewDownloader(sess)
+	_, err = downloader.Download(f, &s3.GetObjectInput{
+		Bucket: aws.String("webtools-private"),
+		Key:    aws.String(filename),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func createErrorResponse(c echo.Context, errorCode constants.ErrorCode) error {
@@ -190,12 +230,15 @@ func guessNameByRdap(rdapResponse rdapResponse) string {
 func getIp2Location(ip string) (*ip2location.IP2Locationrecord, error) {
 	var err error
 	var dbResponse ip2location.IP2Locationrecord
-	//厳密ではないが、IPv4かIPv6のどちらか判別できれば良いので許容
-	ipV4Regex := regexp.MustCompile(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}`)
-	if ipV4Regex.MatchString(ip) {
+	ip2locationTools := ip2location.OpenTools()
+	if ip2locationTools.IsIPv4(ip) {
 		dbResponse, err = ip2locationDbV4.Get_all(ip)
 	} else {
-		dbResponse, err = ip2locationDbV6.Get_all(ip)
+		if ip2locationTools.IsIPv6(ip) {
+			dbResponse, err = ip2locationDbV6.Get_all(ip)
+		} else {
+			return nil, errors.New("not_ip_address")
+		}
 	}
 	if err != nil {
 		log.Println("ip2location get country error: " + err.Error())

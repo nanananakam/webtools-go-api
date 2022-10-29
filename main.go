@@ -38,7 +38,7 @@ func main() {
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
 	}))
 
-	e.GET("/", healthCheckHandler)
+	e.GET("/_chk", healthCheckHandler)
 	e.POST("/whois", whois.Handler)
 	e.Logger.Fatal(e.Start("0.0.0.0:80"))
 }

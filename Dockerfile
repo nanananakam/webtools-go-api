@@ -1,5 +1,10 @@
 FROM golang:1.19-alpine3.16
 
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
 ENV ROOT=/go/src/app
 ENV CGO_ENABLED=0
 WORKDIR ${ROOT}
@@ -13,6 +18,4 @@ ENV ROOT=/go/src/app
 WORKDIR ${ROOT}
 
 COPY --from=0 /go/src/app/main /go/src/app
-COPY whois/IP2LOCATION-LITE-DB11.BIN /go/src/app/whois
-COPY whois/IP2LOCATION-LITE-DB11.IPV6.BIN /go/src/app/whois
 CMD ["/go/src/app/main"]
