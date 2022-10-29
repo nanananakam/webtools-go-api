@@ -13,6 +13,7 @@ jobs:
       - run:
           name: Docker Push
           command: |
+            mkdir ~/.docker
             echo ${DOCKER_CONFIG_JSON} > ~/.docker/config.json
             docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
 
