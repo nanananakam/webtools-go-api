@@ -70,11 +70,11 @@ var ip2locationDbV4 *ip2location.DB
 var ip2locationDbV6 *ip2location.DB
 
 func init() {
-	dbv4, err := ip2location.OpenDB("./IP2LOCATION-LITE-DB11.BIN")
+	dbv4, err := ip2location.OpenDB("./whois/IP2LOCATION-LITE-DB11.BIN")
 	if err != nil {
 		panic("ip2location DB IPv4 Open failed. " + err.Error())
 	}
-	dbv6, err := ip2location.OpenDB("./IP2LOCATION-LITE-DB11.IPV6.BIN")
+	dbv6, err := ip2location.OpenDB("./whois/IP2LOCATION-LITE-DB11.IPV6.BIN")
 	if err != nil {
 		panic("ip2location DB IPv6 Open failed. " + err.Error())
 	}
