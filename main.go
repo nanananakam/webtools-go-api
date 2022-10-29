@@ -268,14 +268,19 @@ func whoisHandler(c echo.Context) error {
 	return createOkResponse(c, *rdapResponse, *ip2LocationRecord)
 }
 
+func healthCheckHandler(c echo.Context) error {
+	return c.String(http.StatusOK, "Ok")
+}
+
 func main() {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"https://www.nanananakam.com", "http://localhost:3000"},
-		AllowMethods: []string{http.MethodPost},
+		AllowMethods: []string{http.MethodGet, http.MethodPost},
 	}))
 
+	e.GET("/", healthCheckHandler)
 	e.POST("/whois", whoisHandler)
 	e.Logger.Fatal(e.Start("0.0.0.0:80"))
 }
