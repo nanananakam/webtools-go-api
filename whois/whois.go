@@ -234,11 +234,7 @@ func getIp2Location(ip string) (*ip2location.IP2Locationrecord, error) {
 	if ip2locationTools.IsIPv4(ip) {
 		dbResponse, err = ip2locationDbV4.Get_all(ip)
 	} else {
-		if ip2locationTools.IsIPv6(ip) {
-			dbResponse, err = ip2locationDbV6.Get_all(ip)
-		} else {
-			return nil, errors.New("not_ip_address")
-		}
+		dbResponse, err = ip2locationDbV6.Get_all(ip)
 	}
 	if err != nil {
 		log.Println("ip2location get country error: " + err.Error())
