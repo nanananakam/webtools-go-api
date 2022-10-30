@@ -1,6 +1,12 @@
 version: 2.1
 jobs:
-  deploy:
+  test:
+    docker:
+      - image: cimg/go:1.19
+    steps:
+      - checkout
+      - run: go test -v ./...
+  build_and_deploy:
     machine:
       image: ubuntu-2004:current
     resource_class: arm.medium
@@ -39,7 +45,7 @@ jobs:
             chmod 600 ~/.docker/config.json
       - run:
           name: Docker Build
-          command: docker build --build-arg AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} --build-arg AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -t kix.ocir.io/ax0w66dqmxlm/webtools-go-api .
+          command: docker build -t kix.ocir.io/ax0w66dqmxlm/webtools-go-api .
       - run:
           name: Docker Push
           command: docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
@@ -49,9 +55,12 @@ jobs:
 
 workflows:
   version: 2
-  build:
+  workflow:
     jobs:
-      - deploy:
+      - test
+      - build_and_deploy:
+          requires:
+            - test
           filters:
             branches:
               only:
