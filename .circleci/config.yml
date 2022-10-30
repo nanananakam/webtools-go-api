@@ -35,6 +35,7 @@ jobs:
             kubectl rollout restart deployment/webtools-go-api
 
 workflows:
+  version: 2
   build:
     jobs:
       - deploy:
