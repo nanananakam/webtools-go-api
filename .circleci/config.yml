@@ -6,6 +6,11 @@ jobs:
     resource_class: arm.medium
     steps:
       - run:
+          name: Prepare Oracle Cloud CLI
+          command: | 
+            bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)"
+            oci --version
+      - run:
           name: Prepare Kubectl
           command: |
             curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/arm64/kubectl"
