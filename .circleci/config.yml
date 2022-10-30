@@ -23,16 +23,13 @@ jobs:
       - checkout
       - run:
           name: Docker Build
-          command: | 
-            docker build --build-arg AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} --build-arg AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -t kix.ocir.io/ax0w66dqmxlm/webtools-go-api .
+          command: docker build --build-arg AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} --build-arg AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -t kix.ocir.io/ax0w66dqmxlm/webtools-go-api .
       - run:
           name: Docker Push
-          command: |
-            docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
+          command: docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
       - run:
           name: restart
-          commane: |
-            kubectl rollout restart deployment/webtools-go-api
+          command: kubectl rollout restart deployment/webtools-go-api
 
 workflows:
   version: 2
