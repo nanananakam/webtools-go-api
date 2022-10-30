@@ -8,7 +8,7 @@ jobs:
       - run:
           name: Prepare Oracle Cloud CLI
           command: | 
-            curl -L0 https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            curl -OL https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
             ./install.sh --accept-all-defaults
             oci --version
       - run:
