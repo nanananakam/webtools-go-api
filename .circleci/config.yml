@@ -16,6 +16,9 @@ jobs:
           fingerprints:
             - "3f:f4:32:08:43:a0:f3:e1:00:2d:07:00:9c:58:ac:47"
       - run:
+          name: Prepare Jq
+          command: sudo killall -9 apt-get || true && sudo apt -y update && apt -y install jq
+      - run:
           name: Prepare Oracle Cloud CLI
           command: | 
             curl -OL https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
@@ -54,9 +57,7 @@ jobs:
           command: ./kubectl rollout restart deployment/webtools-go-api
       - run:
           name: Clean Repository
-          command: |
-            sudo apt -y update && apt -y install jq
-            oci artifacts container image list --repository-name webtools-go-api --compartment-id=ocid1.tenancy.oc1..aaaaaaaalgknqefnt2n5iwwmgttljqidwk44kcwegxfgapxobfzi3h3nx3xq | jq '.data.items[] | select(."display-name" | test("unknown")) | .id' | xargs -IID oci artifacts container image delete --image-id ID --force
+          command: oci artifacts container image list --repository-name webtools-go-api --compartment-id=ocid1.tenancy.oc1..aaaaaaaalgknqefnt2n5iwwmgttljqidwk44kcwegxfgapxobfzi3h3nx3xq | jq '.data.items[] | select(."display-name" | test("unknown")) | .id' | xargs -IID oci artifacts container image delete --image-id ID --force
 
 workflows:
   version: 2
