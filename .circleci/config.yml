@@ -50,8 +50,13 @@ jobs:
           name: Docker Push
           command: docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
       - run:
-          name: restart
+          name: Restart
           command: ./kubectl rollout restart deployment/webtools-go-api
+      - run:
+          name: Clean Repository
+          command: |
+            sudo apt -y update && apt -y install jq
+            oci artifacts container image list --repository-name webtools-go-api --compartment-id=ocid1.tenancy.oc1..aaaaaaaalgknqefnt2n5iwwmgttljqidwk44kcwegxfgapxobfzi3h3nx3xq | jq '.data.items[] | select(."display-name" | test("unknown")) | .id' | xargs -IID oci artifacts container image delete --image-id ID --force
 
 workflows:
   version: 2
