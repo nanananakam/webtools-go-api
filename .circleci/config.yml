@@ -9,6 +9,7 @@ jobs:
           name: Prepare Oracle Cloud CLI
           command: | 
             curl -OL https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            chmod a+x ./install.sh
             ./install.sh --accept-all-defaults
             oci --version
       - run:
