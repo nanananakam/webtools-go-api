@@ -45,7 +45,7 @@ jobs:
           command: docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
       - run:
           name: restart
-          command: kubectl rollout restart deployment/webtools-go-api
+          command: ./kubectl rollout restart deployment/webtools-go-api
 
 workflows:
   version: 2
