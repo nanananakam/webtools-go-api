@@ -8,7 +8,7 @@ jobs:
       - run:
           name: Prepare Oracle Cloud CLI
           command: | 
-            bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)"
+            bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh) --accept-all-defaults"
             oci --version
       - run:
           name: Prepare Kubectl
