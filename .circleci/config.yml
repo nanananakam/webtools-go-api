@@ -5,6 +5,7 @@ jobs:
       image: ubuntu-2004:current
     resource_class: arm.medium
     steps:
+      - checkout
       - add_ssh_keys:
           fingerprints:
             - "3f:f4:32:08:43:a0:f3:e1:00:2d:07:00:9c:58:ac:47"
@@ -18,7 +19,7 @@ jobs:
             mkdir ~/.oci
             mv ./oci-config ~/.oci/config
             oci --version
-            ls -alh ~/.ssh
+            oci setup repair-file-permissions --file /home/circleci/.oci/config
             oci ce cluster generate-token --cluster-id ocid1.cluster.oc1.ap-osaka-1.aaaaaaaabo5xtkazuf73kstqqqbeoxb2xwrvlc4kt55ll7husc6xxdnluwxa --region ap-osaka-1
       - run:
           name: Prepare Kubectl
@@ -29,13 +30,13 @@ jobs:
             aws s3 cp s3://webtools-private/kube-config . --region ap-osaka-1 --endpoint-url https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com
             mkdir ~/.kube
             mv ./kube-config ~/.kube/config
+            chmod 600 ~/.kube/config
             ./kubectl version
       - run:
           name: Prepare Docker Registry
           command: |
             mkdir ~/.docker
             echo ${DOCKER_CONFIG_JSON} > ~/.docker/config.json
-      - checkout
       - run:
           name: Docker Build
           command: docker build --build-arg AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} --build-arg AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -t kix.ocir.io/ax0w66dqmxlm/webtools-go-api .
