@@ -1,10 +1,25 @@
 version: 2.1
 jobs:
-  build:
+  deploy:
     machine:
       image: ubuntu-2004:current
     resource_class: arm.medium
     steps:
+      - run:
+          name: Prepare Kubectl
+          command: |
+            curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/arm64/kubectl"
+            chmod +x ./kubectl
+            ./kubectl version --client
+            aws s3 cp s3://webtools-private/kube-config . --region ap-osaka-1 --endpoint-url https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com
+            mkdir ~/.kube
+            mv ./kube-config ~/.kube/config
+            ./kubectl version
+      - run:
+          name: Prepare Docker Registry
+          command: |
+            mkdir ~/.docker
+            echo ${DOCKER_CONFIG_JSON} > ~/.docker/config.json
       - checkout
       - run:
           name: Docker Build
@@ -13,11 +28,17 @@ jobs:
       - run:
           name: Docker Push
           command: |
-            mkdir ~/.docker
-            echo ${DOCKER_CONFIG_JSON} > ~/.docker/config.json
             docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
+      - run:
+          name: restart
+          commane: |
+            kubectl rollout restart deployment/webtools-go-api
 
 workflows:
   build:
     jobs:
-      - build
+      - deploy:
+          filters:
+            branches:
+              only:
+                - main
