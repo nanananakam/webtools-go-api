@@ -289,19 +289,40 @@ func Handler(c echo.Context) error {
 		return createErrorResponse(c, constants.ErrorInvalidInput)
 	}
 
-	if err := validateRecaptcha(parsedRequest.RecaptchaToken); err != nil {
+	errChanGetIp2LocationError := make(chan error)
+	chanIp2LocationRecord := make(chan *ip2location.IP2Locationrecord)
+	go func() {
+		ip2LocationRecord, err := getIp2Location(parsedRequest.Input)
+		errChanGetIp2LocationError <- err
+		chanIp2LocationRecord <- ip2LocationRecord
+	}()
+
+	//外部APIリクエストがあるものはRecaptcha認証成功後に実行
+	errChanValidateRecaptcha := make(chan error)
+	errChanGetRdapResponse := make(chan error)
+	chanRdapResponse := make(chan *rdapResponseWithGuess)
+	go func() {
+		err := validateRecaptcha(parsedRequest.RecaptchaToken)
+		errChanValidateRecaptcha <- err
+	}()
+	if err := <-errChanValidateRecaptcha; err != nil {
 		return createErrorResponse(c, constants.ErrorInvalidInput)
 	}
+	go func() {
+		rdapResponse, err := getRdapResponse(parsedRequest.Input)
+		errChanGetRdapResponse <- err
+		chanRdapResponse <- rdapResponse
+	}()
 
-	rdapResponse, err := getRdapResponse(parsedRequest.Input)
-	if err != nil {
+	if err := <-errChanGetIp2LocationError; err != nil {
+		return createErrorResponse(c, constants.ErrorIp2LocationError)
+	}
+	if err := <-errChanGetRdapResponse; err != nil {
 		return createErrorResponse(c, constants.ErrorRdapError)
 	}
 
-	ip2LocationRecord, err := getIp2Location(parsedRequest.Input)
-	if err != nil {
-		return createErrorResponse(c, constants.ErrorIp2LocationError)
-	}
+	rdapResponse := <-chanRdapResponse
+	ip2LocationRecord := <-chanIp2LocationRecord
 
 	return createOkResponse(c, *rdapResponse, *ip2LocationRecord)
 }
