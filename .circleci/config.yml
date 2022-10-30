@@ -5,12 +5,18 @@ jobs:
       image: ubuntu-2004:current
     resource_class: arm.medium
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "3f:f4:32:08:43:a0:f3:e1:00:2d:07:00:9c:58:ac:47"
       - run:
           name: Prepare Oracle Cloud CLI
           command: | 
             curl -OL https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
             chmod a+x ./install.sh
             ./install.sh --accept-all-defaults
+            aws s3 cp s3://webtools-private/oci-config . --region ap-osaka-1 --endpoint-url https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com
+            mkdir ~/.oci
+            mv ./oci-config ~/.oci/config
             oci --version
       - run:
           name: Prepare Kubectl
