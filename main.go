@@ -3,23 +3,9 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"nanananakam-api-go/echoHeader"
 	"nanananakam-api-go/whois"
 	"net/http"
-)
-
-type errorCode string
-
-const (
-	errorInvalidInput     errorCode = "ERROR_INVALID_INPUT"
-	errorRdapError        errorCode = "ERROR_RDAP_ERROR"
-	errorIp2LocationError errorCode = "ERROR_IP2LOCATION_ERROR"
-)
-
-type statusCode string
-
-const (
-	statusOk    statusCode = "OK"
-	statusError statusCode = "ERROR"
 )
 
 func healthCheckHandler(c echo.Context) error {
@@ -40,5 +26,6 @@ func main() {
 
 	e.GET("/_chk", healthCheckHandler)
 	e.POST("/whois", whois.Handler)
+	e.POST("/echoHeader", echoHeader.Handler)
 	e.Logger.Fatal(e.Start("0.0.0.0:80"))
 }
