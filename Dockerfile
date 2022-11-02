@@ -4,6 +4,7 @@ ENV ROOT=/go/src/app
 ENV CGO_ENABLED=0
 WORKDIR ${ROOT}
 
+COPY ./pkg/ /go/pkg/
 COPY ./ /go/src/app/
 RUN go build -a -installsuffix cgo -o main .
 

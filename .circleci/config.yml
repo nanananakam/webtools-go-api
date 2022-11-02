@@ -1,49 +1,47 @@
 version: 2.1
 jobs:
   test:
+    environment:
+      - CGO_ENABLED: 0
     docker:
-      - image: cimg/go:1.19
+      - image: golang:1.19-alpine3.16
+        auth:
+          username: nanananakam
+          password: $DOCKER_PASSWORD
+    resource_class: small
     steps:
       - checkout
+      - restore_cache:
+          key: deps-test-{{ checksum "go.sum" }}
       - run: go test -v ./...
-  build_and_deploy:
+      - save_cache:
+          key: deps-test-{{ checksum "go.sum" }}
+          paths:
+            - /go/pkg
+  build:
     machine:
       image: ubuntu-2004:current
     resource_class: arm.medium
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "3f:f4:32:08:43:a0:f3:e1:00:2d:07:00:9c:58:ac:47"
       - run:
-          name: Prepare Jq
-          command: sudo apt-get update && sudo apt-get install -y jq
+          name: Docker Login
+          command: docker login -u nanananakam -p ${DOCKER_PASSWORD}
+      - restore_cache:
+          key: deps-deploy-{{ checksum "go.sum" }}
       - run:
-          name: Prepare Oracle Cloud CLI
-          command: | 
-            curl -OL https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-            chmod a+x ./install.sh
-            ./install.sh --accept-all-defaults
-            aws s3 cp s3://webtools-private/oci-config . --region ap-osaka-1 --endpoint-url https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com
-            mkdir ~/.oci
-            mv ./oci-config ~/.oci/config
-            oci setup repair-file-permissions --file /home/circleci/.oci/config
-            oci --version
-      - run:
-          name: Prepare Kubectl
+          name: download go mod
           command: |
-            curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/arm64/kubectl"
-            chmod +x ./kubectl
-            ./kubectl version --client
-            aws s3 cp s3://webtools-private/kube-config . --region ap-osaka-1 --endpoint-url https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com
-            mkdir ~/.kube
-            mv ./kube-config ~/.kube/config
-            chmod 600 ~/.kube/config
-            ./kubectl version
+            mkdir -p ./pkg
+            docker run --rm -e CGO_ENABLED=0 -v /$(pwd):/go/src/app -v /$(pwd)/pkg:/go/pkg golang:1.19-alpine3.16 sh -c "cd src/app && go mod download"
+      - save_cache:
+          key: deps-deploy-{{ checksum "go.sum" }}
+          paths:
+            - "pkg"
       - run:
           name: Prepare Docker Registry
           command: |
-            mkdir ~/.docker
+            mkdir -p ~/.docker
             echo ${DOCKER_CONFIG_JSON} > ~/.docker/config.json
             chmod 600 ~/.docker/config.json
       - run:
@@ -52,21 +50,53 @@ jobs:
       - run:
           name: Docker Push
           command: docker push kix.ocir.io/ax0w66dqmxlm/webtools-go-api
+
+  deploy:
+    docker:
+      - image: nanananakam/oracle-cloud-cli
+    resource_class: small
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "3f:f4:32:08:43:a0:f3:e1:00:2d:07:00:9c:58:ac:47"
+      - run:
+          name: Prepare Oracle Cloud CLI
+          command: |
+            aws s3 cp s3://webtools-private/oci-config . --region ap-osaka-1 --endpoint-url https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com
+            mkdir ~/.oci
+            mv ./oci-config ~/.oci/config
+            oci setup repair-file-permissions --file ~/.oci/config
+            oci --version
+      - run:
+          name: Prepare Kubectl
+          command: |
+            aws s3 cp s3://webtools-private/kube-config . --region ap-osaka-1 --endpoint-url https://ax0w66dqmxlm.compat.objectstorage.ap-osaka-1.oraclecloud.com
+            mkdir ~/.kube
+            mv ./kube-config ~/.kube/config
+            chmod 600 ~/.kube/config
+            kubectl version
       - run:
           name: Restart
-          command: ./kubectl rollout restart deployment/webtools-go-api
+          command: kubectl rollout restart deployment/webtools-go-api
       - run:
           name: Clean Repository
           command: oci artifacts container image list --repository-name webtools-go-api --compartment-id=ocid1.tenancy.oc1..aaaaaaaalgknqefnt2n5iwwmgttljqidwk44kcwegxfgapxobfzi3h3nx3xq | jq '.data.items[] | select(."display-name" | test("unknown")) | .id' | xargs -IID oci artifacts container image delete --image-id ID --force
-
 workflows:
   version: 2
   workflow:
     jobs:
       - test
-      - build_and_deploy:
+      - build:
           requires:
             - test
+          filters:
+            branches:
+              only:
+                - main
+      - deploy:
+          requires:
+            - test
+            - build
           filters:
             branches:
               only:
