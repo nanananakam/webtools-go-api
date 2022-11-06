@@ -10,9 +10,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/ip2location/ip2location-go/v9"
 	"github.com/labstack/echo/v4"
+	"github.com/oschwald/geoip2-golang"
 	"io"
 	"log"
-	"nanananakam-api-go/constants"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -64,20 +65,25 @@ type myRequest struct {
 }
 
 type myResponse struct {
-	StatusCode            constants.StatusCode          `json:"statusCode,omitempty"`
-	ErrorCode             constants.ErrorCode           `json:"errorCode,omitempty"`
+	StatusCode            StatusCode                    `json:"statusCode,omitempty"`
+	ErrorCode             ErrorCode                     `json:"errorCode,omitempty"`
 	RdapResponseWithGuess rdapResponseWithGuess         `json:"rdapResponseWithGuess,omitempty"`
 	Ip2LocationRecord     ip2location.IP2Locationrecord `json:"ip2LocationRecord"`
+	GeoIp2LocationCity    geoip2.City                   `json:"geoIp2LocationCity"`
 }
 
 var ip2locationDbV4 *ip2location.DB
 var ip2locationDbV6 *ip2location.DB
+var geoIp2Db *geoip2.Reader
 
 func init() {
 	if err := downloadFromObjectStorage("IP2LOCATION-LITE-DB11.BIN"); err != nil {
 		panic("download failed. " + err.Error())
 	}
 	if err := downloadFromObjectStorage("IP2LOCATION-LITE-DB11.IPV6.BIN"); err != nil {
+		panic("download failed. " + err.Error())
+	}
+	if err := downloadFromObjectStorage("GeoLite2-City.mmdb"); err != nil {
 		panic("download failed. " + err.Error())
 	}
 	dbv4, err := ip2location.OpenDB("IP2LOCATION-LITE-DB11.BIN")
@@ -88,8 +94,13 @@ func init() {
 	if err != nil {
 		panic("ip2location DB IPv6 Open failed. " + err.Error())
 	}
+	dbGeoIp, err := geoip2.Open("GeoLite2-City.mmdb")
+	if err != nil {
+		panic("geoip2 DB Open failed. " + err.Error())
+	}
 	ip2locationDbV4 = dbv4
 	ip2locationDbV6 = dbv6
+	geoIp2Db = dbGeoIp
 }
 
 func downloadFromObjectStorage(filename string) error {
@@ -122,19 +133,20 @@ func downloadFromObjectStorage(filename string) error {
 	return nil
 }
 
-func createErrorResponse(c echo.Context, errorCode constants.ErrorCode) error {
+func createErrorResponse(c echo.Context, errorCode ErrorCode) error {
 	response := myResponse{
-		StatusCode: constants.StatusError,
+		StatusCode: StatusError,
 		ErrorCode:  errorCode,
 	}
 	return c.JSON(http.StatusBadRequest, response)
 }
 
-func createOkResponse(c echo.Context, rdapResponse rdapResponseWithGuess, ip2LocationRecord ip2location.IP2Locationrecord) error {
+func createOkResponse(c echo.Context, rdapResponse rdapResponseWithGuess, ip2LocationRecord ip2location.IP2Locationrecord, geoIp2LocationCity geoip2.City) error {
 	response := myResponse{
-		StatusCode:            constants.StatusOk,
+		StatusCode:            StatusOk,
 		RdapResponseWithGuess: rdapResponse,
 		Ip2LocationRecord:     ip2LocationRecord,
+		GeoIp2LocationCity:    geoIp2LocationCity,
 	}
 	return c.JSON(http.StatusOK, response)
 }
@@ -227,6 +239,18 @@ func guessNameByRdap(rdapResponse rdapResponse) string {
 	return parseEntity(rdapResponse.Entities)
 }
 
+func getGeoIp2Location(ipString string) (*geoip2.City, error) {
+	ip := net.ParseIP(ipString)
+	if ip == nil {
+		return nil, errors.New("invalid ip address")
+	}
+	record, err := geoIp2Db.City(ip)
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
+}
+
 func getIp2Location(ip string) (*ip2location.IP2Locationrecord, error) {
 	var err error
 	var dbResponse ip2location.IP2Locationrecord
@@ -286,15 +310,22 @@ func HealthCheck() bool {
 func Handler(c echo.Context) error {
 	parsedRequest := new(myRequest)
 	if err := c.Bind(parsedRequest); err != nil {
-		return createErrorResponse(c, constants.ErrorInvalidInput)
+		return createErrorResponse(c, ErrorInvalidInput)
 	}
 
 	errChanGetIp2LocationError := make(chan error)
+	errChanGetGeoIp2LocationError := make(chan error)
 	chanIp2LocationRecord := make(chan *ip2location.IP2Locationrecord)
+	chanGeoIp2Location := make(chan *geoip2.City)
 	go func() {
 		ip2LocationRecord, err := getIp2Location(parsedRequest.Input)
 		errChanGetIp2LocationError <- err
 		chanIp2LocationRecord <- ip2LocationRecord
+	}()
+	go func() {
+		geoIp2Location, err := getGeoIp2Location(parsedRequest.Input)
+		errChanGetGeoIp2LocationError <- err
+		chanGeoIp2Location <- geoIp2Location
 	}()
 
 	//外部APIリクエストがあるものはRecaptcha認証成功後に実行
@@ -306,7 +337,7 @@ func Handler(c echo.Context) error {
 		errChanValidateRecaptcha <- err
 	}()
 	if err := <-errChanValidateRecaptcha; err != nil {
-		return createErrorResponse(c, constants.ErrorInvalidInput)
+		return createErrorResponse(c, ErrorInvalidInput)
 	}
 	go func() {
 		rdapResponse, err := getRdapResponse(parsedRequest.Input)
@@ -315,14 +346,18 @@ func Handler(c echo.Context) error {
 	}()
 
 	if err := <-errChanGetIp2LocationError; err != nil {
-		return createErrorResponse(c, constants.ErrorIp2LocationError)
+		return createErrorResponse(c, ErrorIp2LocationError)
+	}
+	if err := <-errChanGetGeoIp2LocationError; err != nil {
+		return createErrorResponse(c, ErrorGeoIp2LocationError)
 	}
 	if err := <-errChanGetRdapResponse; err != nil {
-		return createErrorResponse(c, constants.ErrorRdapError)
+		return createErrorResponse(c, ErrorRdapError)
 	}
 
 	rdapResponse := <-chanRdapResponse
 	ip2LocationRecord := <-chanIp2LocationRecord
+	geoIp2LocationCity := <-chanGeoIp2Location
 
-	return createOkResponse(c, *rdapResponse, *ip2LocationRecord)
+	return createOkResponse(c, *rdapResponse, *ip2LocationRecord, *geoIp2LocationCity)
 }
