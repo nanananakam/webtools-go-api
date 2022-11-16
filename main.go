@@ -20,7 +20,7 @@ func main() {
 	e := echo.New()
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"https://www.nanananakam.com", "http://localhost:3000"},
+		AllowOrigins: []string{"https://www.nanananakam.com", "https://nanananakam.com", "http://localhost:3000"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
 	}))
 
